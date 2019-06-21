@@ -112,12 +112,5 @@ public enum SwipeAnimationType: SwipeAnimationTypeProtocol {
     ///   - to: New selected tab view.
     ///   - direction: Direction in which the views animated.
     public func completion(fromView from: UIView, toView to: UIView, direction: Direction) {
-        switch self {
-        case .cube:
-            from.layer.anchorPointZ = .zero
-            to.layer.anchorPointZ = .zero
-        default:
-            return
-        }
     }
 }
