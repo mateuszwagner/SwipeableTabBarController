@@ -60,6 +60,7 @@ class SwipeTransitionAnimator: NSObject, SwipeTransitioningProtocol {
                        animations: {
                         self.animationType.animation(fromView: fromView, toView: toView, direction: direction)
         }, completion: { _ in
+            self.animationType.completion(fromView: fromView, toView: toView, direction: direction)
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
     }

@@ -16,6 +16,7 @@ public protocol SwipeAnimationTypeProtocol {
     func addTo(containerView: UIView, fromView: UIView, toView: UIView)
     func prepare(fromView from: UIView, toView to: UIView, direction: Direction)
     func animation(fromView from: UIView, toView to: UIView, direction: Direction)
+    func completion(fromView from: UIView, toView to: UIView, direction: Direction)
 }
 
 /// Different types of interactive animations.
@@ -81,6 +82,19 @@ public enum SwipeAnimationType: SwipeAnimationTypeProtocol {
         case .push:
             to.frame.origin.x = 0
             from.frame.origin.x = direction == .forward ? screenWidth : -screenWidth
+        }
+    }
+    
+    /// The completion to call upon finishing animation.
+    ///
+    /// - Parameters:
+    ///   - from: Previously selected tab view.
+    ///   - to: New selected tab view.
+    ///   - direction: Direction in which the views animated.
+    public func completion(fromView from: UIView, toView to: UIView, direction: Direction) {
+        switch self {
+        default:
+            return
         }
     }
 }
