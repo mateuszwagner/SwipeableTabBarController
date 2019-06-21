@@ -54,7 +54,7 @@ class SwipeTransitionAnimator: NSObject, SwipeTransitioningProtocol {
         
         UIView.animate(withDuration: duration,
                        delay: 0,
-                       options: [.curveLinear],
+                       options: [.curveLinear, .preferredFramesPerSecond60],
                        animations: {
                         self.animationType.animation(fromView: fromView, toView: toView, direction: direction)
         }, completion: { _ in

@@ -28,6 +28,7 @@ public enum SwipeAnimationType: SwipeAnimationTypeProtocol {
     case overlap
     case sideBySide
     case push
+    case cube
     
     /// Setup the views hirearchy for different animations types.
     ///
@@ -62,6 +63,17 @@ public enum SwipeAnimationType: SwipeAnimationTypeProtocol {
             let scaledWidth = screenWidth / 6
             to.frame.origin.x = direction == .forward ? -scaledWidth : scaledWidth
             from.frame.origin.x = 0
+        case .cube:
+            from.layer.anchorPointZ = -screenWidth / 2
+            to.layer.anchorPointZ = -screenWidth / 2
+            //
+            var transform = CATransform3DIdentity
+            transform.m34 = -1 / 1_000
+            transform = CATransform3DTranslate(transform, 0, 0, -screenWidth / 2)
+            from.layer.transform = CATransform3DRotate(transform, 0, 0, 1, 0)
+            //
+            transform = CATransform3DRotate(transform, (direction == .forward ? -1.0 : 1.0) * CGFloat(Double.pi / 2), 0, 1, 0)
+            to.layer.transform = CATransform3DRotate(transform, 0, 0, 1, 0)
         }
     }
 
@@ -82,9 +94,17 @@ public enum SwipeAnimationType: SwipeAnimationTypeProtocol {
         case .push:
             to.frame.origin.x = 0
             from.frame.origin.x = direction == .forward ? screenWidth : -screenWidth
+        case .cube:
+            to.layer.transform = CATransform3DIdentity
+            //
+            var transform = CATransform3DIdentity
+            transform.m34 = -1 / 1_000
+            transform = CATransform3DTranslate(transform, 0, 0, -screenWidth / 2)
+            transform = CATransform3DRotate(transform, (direction == .forward ? 1.0 : -1.0) * CGFloat(Double.pi / 2), 0, 1, 0)
+            from.layer.transform = CATransform3DRotate(transform, 0, 0, 1, 0)
         }
     }
-    
+
     /// The completion to call upon finishing animation.
     ///
     /// - Parameters:
@@ -93,6 +113,9 @@ public enum SwipeAnimationType: SwipeAnimationTypeProtocol {
     ///   - direction: Direction in which the views animated.
     public func completion(fromView from: UIView, toView to: UIView, direction: Direction) {
         switch self {
+        case .cube:
+            from.layer.anchorPointZ = .zero
+            to.layer.anchorPointZ = .zero
         default:
             return
         }
