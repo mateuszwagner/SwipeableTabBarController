@@ -10,10 +10,13 @@ import UIKit
 
 /// TODO (marcosgriselli): - Come up with a simpler protocol based on starting and ending vectors.
 
+public typealias Direction = UIPageViewController.NavigationDirection
+
 public protocol SwipeAnimationTypeProtocol {
     func addTo(containerView: UIView, fromView: UIView, toView: UIView)
-    func prepare(fromView from: UIView, toView to: UIView, direction: Bool)
-    func animation(fromView from: UIView, toView to: UIView, direction: Bool)
+    func prepare(fromView from: UIView, toView to: UIView, direction: Direction)
+    func animation(fromView from: UIView, toView to: UIView, direction: Direction)
+    func completion(fromView from: UIView, toView to: UIView, direction: Direction)
 }
 
 /// Different types of interactive animations.
@@ -47,17 +50,17 @@ public enum SwipeAnimationType: SwipeAnimationTypeProtocol {
     ///   - from: Previously selected tab view.
     ///   - to: New selected tab view.
     ///   - direction: Direction in which the views will animate.
-    public func prepare(fromView from: UIView, toView to: UIView, direction: Bool) {
+    public func prepare(fromView from: UIView, toView to: UIView, direction: Direction) {
         let screenWidth = UIScreen.main.bounds.size.width
         switch self {
         case .overlap:
-            to.frame.origin.x = direction ? -screenWidth : screenWidth
+            to.frame.origin.x = direction == .forward ? -screenWidth : screenWidth
         case .sideBySide:
             from.frame.origin.x = 0
-            to.frame.origin.x = direction ? -screenWidth : screenWidth
+            to.frame.origin.x = direction == .forward ? -screenWidth : screenWidth
         case .push:
             let scaledWidth = screenWidth / 6
-            to.frame.origin.x = direction ? -scaledWidth : scaledWidth
+            to.frame.origin.x = direction == .forward ? -scaledWidth : scaledWidth
             from.frame.origin.x = 0
         }
     }
@@ -68,17 +71,30 @@ public enum SwipeAnimationType: SwipeAnimationTypeProtocol {
     ///   - from: Previously selected tab view.
     ///   - to: New selected tab view.
     ///   - direction: Direction in which the views will animate.
-    public func animation(fromView from: UIView, toView to: UIView, direction: Bool) {
+    public func animation(fromView from: UIView, toView to: UIView, direction: Direction) {
         let screenWidth = UIScreen.main.bounds.size.width
         switch self {
         case .overlap:
             to.frame.origin.x = 0
         case .sideBySide:
-            from.frame.origin.x = direction ? screenWidth : -screenWidth
+            from.frame.origin.x = direction == .forward ? screenWidth : -screenWidth
             to.frame.origin.x = 0
         case .push:
             to.frame.origin.x = 0
-            from.frame.origin.x = direction ? screenWidth : -screenWidth
+            from.frame.origin.x = direction == .forward ? screenWidth : -screenWidth
+        }
+    }
+    
+    /// The completion to call upon finishing animation.
+    ///
+    /// - Parameters:
+    ///   - from: Previously selected tab view.
+    ///   - to: New selected tab view.
+    ///   - direction: Direction in which the views animated.
+    public func completion(fromView from: UIView, toView to: UIView, direction: Direction) {
+        switch self {
+        default:
+            return
         }
     }
 }
