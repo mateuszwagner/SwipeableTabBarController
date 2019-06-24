@@ -24,8 +24,7 @@ open class SwipeableTabBarController: UITabBarController {
     private var currentAnimatedTransitioningType: SwipeTransitioningProtocol?
     
     /// Pan gesture for the swiping interaction
-    //swiftlint:disable next implicitly_unwrapped_optional
-    private var panGestureRecognizer: UIPanGestureRecognizer!
+    private var panGestureRecognizer: UIPanGestureRecognizer?
 
     @available(*, deprecated, message: "For the moment the diagonal swipe configuration is not available.")
     /// Toggle the diagonal swipe to remove the just `perfect` horizontal swipe interaction
@@ -33,8 +32,10 @@ open class SwipeableTabBarController: UITabBarController {
     open var diagonalSwipeEnabled = true
 
     /// Enables/Disables swipes on the tabbar controller.
-    open var isSwipeEnabled = true {
-        didSet { panGestureRecognizer.isEnabled = isSwipeEnabled }
+    open var isSwipeEnabled: Bool = true {
+        didSet {
+            panGestureRecognizer?.isEnabled = isSwipeEnabled
+        }
     }
 
     /// Enables/Disables cycling swipes on the tabBar controller. default value is 'false'
@@ -55,8 +56,10 @@ open class SwipeableTabBarController: UITabBarController {
         delegate = self
         currentAnimatedTransitioningType = tapAnimatedTransitioning
         // Gesture setup
+        //swiftlint:disable next implicitly_unwrapped_optional
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerDidPan(_:)))
-        view.addGestureRecognizer(panGestureRecognizer)
+        panGestureRecognizer?.isEnabled = isSwipeEnabled
+        view.addGestureRecognizer(panGestureRecognizer!)
     }
 
     @IBAction func panGestureRecognizerDidPan(_ sender: UIPanGestureRecognizer) {
@@ -142,11 +145,11 @@ extension SwipeableTabBarController: UITabBarControllerDelegate {
     }
 
     open func tabBarController(_ tabBarController: UITabBarController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        if panGestureRecognizer.state == .began || panGestureRecognizer.state == .changed {
-            return SwipeInteractor(gestureRecognizer: panGestureRecognizer, edge: currentAnimatedTransitioningType?.targetEdge ?? .right)
-        } else {
+        guard let gestureRecognizer = panGestureRecognizer,
+            gestureRecognizer.state == .began || gestureRecognizer.state == .changed else {
             return nil
         }
+        return SwipeInteractor(gestureRecognizer: gestureRecognizer, edge: currentAnimatedTransitioningType?.targetEdge ?? .right)
     }
     
     open func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
